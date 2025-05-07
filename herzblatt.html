@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Herzblatt-Spiel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff3f7;
+      color: #333;
+      padding: 20px;
+      text-align: center;
+      transition: background 0.5s ease;
+    }
+
+    h1 {
+      color: #e91e63;
+    }
+
+    #logo {
+      width: 200px;
+      margin-bottom: 20px;
+    }
+
+    #game {
+      margin-top: 20px;
+    }
+
+    .candidate {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+      justify-content: center;
+    }
+
+    .candidate img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #e91e63;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      border: none;
+      background-color: #e91e63;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ad1457;
+    }
+
+    .confetti-bg {
+      background-image: url('https://www.transparenttextures.com/patterns/confetti.png');
+      background-repeat: repeat;
+    }
+  </style>
+</head>
+<body>
+
+  <img id="logo" src="Download.jpeg" alt="Herzblatt-Logo">
+
+  <h1>💘 Willkommen beim Herzblatt-Spiel!</h1>
+
+  <div id="game">
+    <h2 id="question">Klicke auf „Nächste Frage“, um zu starten!</h2>
+    <div id="answers"></div>
+    <div>
+      <button id="back-btn" style="display:none;">Zurück</button>
+      <button id="next-btn">Nächste Frage</button>
+      <button id="restart-btn" style="display:none;">🔁 Spiel neu starten</button>
+    </div>
+  </div>
+
+  <script>
+    const candidates = [
+      {
+        name: "Emerson",
+        image: "emerson.jpg",
+        answers: [
+          "Ich gehe arbeiten, um meine Familie zu versorgen!",
+          "Ich bin sehr stark, zielstrebig und beschützerisch.",
+          "Ich würde für dich Fische im Meer fangen!",
+          "Ich bin ein richtiger Familienmensch."
+        ]
+      },
+      {
+        name: "Emi",
+        image: "emi.jpg",
+        answers: [
+          "Ich probiere gerne neue Dinge aus und bin kreativ.",
+          "Ich würde meinen Charakter als ruhig und überlegt beschreiben.",
+          "Ich würde uns mit allem versorgen, was es gibt!",
+          "Ich bin sehr praktisch und lösungsorientiert."
+        ]
+      },
+      {
+        name: "Emmi",
+        image: "emmi.jpg",
+        answers: [
+          "Ich gehe modeln und kümmere mich um mein Leben.",
+          "Ich bin sehr empathisch und liebe es, zu helfen.",
+          "Ich würde schauen, wie wir schnell wieder wegkommen...",
+          "Ich bin besonders in meiner Fähigkeit, gut auszusehen."
+        ]
+      }
+    ];
+
+    const questions = [
+      "Was machst du in deiner Freizeit?",
+      "Wie würdest du deinen Charakter beschreiben?",
+      "Wie würdest du mich auf einer einsamen Insel ernähren?",
+      "Was macht dich besonders?"
+    ];
+
+    let currentQuestion = -1;
+
+    const questionEl = document.getElementById("question");
+    const answersDiv = document.getElementById("answers");
+    const nextBtn = document.getElementById("next-btn");
+    const backBtn = document.getElementById("back-btn");
+    const restartBtn = document.getElementById("restart-btn");
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion();
+      } else {
+        showFinalChoice();
+      }
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion();
+      }
+    });
+
+    restartBtn.addEventListener("click", () => {
+      document.body.classList.remove("confetti-bg");
+      currentQuestion = -1;
+      questionEl.textContent = "Klicke auf „Nächste Frage“, um zu starten!";
+      answersDiv.innerHTML = "";
+      nextBtn.style.display = "inline-block";
+      backBtn.style.display = "none";
+      restartBtn.style.display = "none";
+    });
+
+    function showQuestion() {
+      questionEl.textContent = questions[currentQuestion];
+      answersDiv.innerHTML = "";
+
+      candidates.forEach(cand => {
+        const div = document.createElement("div");
+        div.className = "candidate";
+
+        const img = document.createElement("img");
+        img.src = cand.image;
+        img.alt = cand.name;
+
+        const text = document.createElement("p");
+        text.textContent = `${cand.name}: ${cand.answers[currentQuestion]}`;
+
+        div.appendChild(img);
+        div.appendChild(text);
+        answersDiv.appendChild(div);
+      });
+
+      backBtn.style.display = currentQuestion > 0 ? "inline-block" : "none";
+      nextBtn.style.display = "inline-block";
+      restartBtn.style.display = "none";
+    }
+
+    function showFinalChoice() {
+      questionEl.textContent = "Wähle dein Herzblatt!";
+      answersDiv.innerHTML = "";
+      document.body.classList.add("confetti-bg");
+
+      candidates.forEach(cand => {
+        const btn = document.createElement("button");
+        btn.textContent = cand.name;
+        btn.onclick = () => {
+          questionEl.textContent = `💘 Du hast ${cand.name} gewählt!`;
+          answersDiv.innerHTML = `
+            <img src="${cand.image}" alt="${cand.name}" style="width:120px;border-radius:50%;margin-top:10px;">
+            <p style="font-size:18px;margin-top:10px;">💖 Viel Glück euch beiden!</p>
+          `;
+          nextBtn.style.display = "none";
+          backBtn.style.display = "none";
+          restartBtn.style.display = "inline-block";
+        };
+        answersDiv.appendChild(btn);
+      });
+
+      nextBtn.style.display = "none";
+      backBtn.style.display = "inline-block";
+    }
+  </script>
+
+</body>
+</html>
